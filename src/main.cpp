@@ -1,7 +1,7 @@
-#include "input/input.h"
+#include "game.h"
 #include<iostream>
 
 int main() {
     std::cout << "Oink Oink run" << std::endl;
-    oinkoinkrun::input::Input();
+    oinkoinkrun::Game game;
 }
