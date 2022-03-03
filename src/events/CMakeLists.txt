@@ -1,0 +1,2 @@
+add_library(oinkoinkrun_events events.cpp)
+target_link_libraries(oinkoinkrun_events SDL2)

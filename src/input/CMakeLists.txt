@@ -1,1 +1,0 @@
-add_library(oinkoinkrun_input input.cpp)

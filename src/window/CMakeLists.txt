@@ -1,0 +1,2 @@
+add_library(oinkoinkrun_window window.cpp)
+target_link_libraries(oinkoinkrun_window SDL2)
