@@ -16,7 +16,11 @@ namespace oinkoinkrun::window {
                     SDL_DestroyWindow(window);
                 });
 
-        surface = SDL_GetWindowSurface(window.get());
+        renderer = std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer*)>>(
+                SDL_CreateRenderer(window.get(), -1, 0),
+                [](SDL_Renderer* renderer) {
+                    SDL_DestroyRenderer(renderer);
+                });
     }
 
     Window::~Window() {
@@ -26,7 +30,17 @@ namespace oinkoinkrun::window {
     void Window::show() {
         std::cout << "Window::show" << std::endl;
         SDL_ShowWindow(window.get());
-        SDL_FillRect(surface, nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
-        SDL_UpdateWindowSurface(window.get());
+    }
+
+    void Window::clear() {
+        SDL_RenderClear(renderer.get());
+    }
+
+    void Window::render() {
+
+    }
+
+    void Window::refresh() {
+        SDL_RenderPresent(renderer.get());
     }
 }

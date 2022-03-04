@@ -3,7 +3,7 @@
 #include <memory>
 
 struct SDL_Window;
-struct SDL_Surface;
+struct SDL_Renderer;
 
 namespace oinkoinkrun::window {
     class Window final {
@@ -11,8 +11,11 @@ namespace oinkoinkrun::window {
         Window();
         ~Window();
         void show();
+        void clear();
+        void render();
+        void refresh();
     private:
         std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>> window;
-        SDL_Surface* surface = nullptr;
+        std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer*)>> renderer;
     };
 }

@@ -30,6 +30,10 @@ namespace oinkoinkrun {
                     }
                 }, event.data);
             });
+
+            window.clear();
+            window.render();
+            window.refresh();
         }
     }
 }
