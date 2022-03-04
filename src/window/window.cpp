@@ -15,6 +15,8 @@ namespace oinkoinkrun::window {
                 [](SDL_Window* window) {
                     SDL_DestroyWindow(window);
                 });
+
+        surface = SDL_GetWindowSurface(window.get());
     }
 
     Window::~Window() {
@@ -24,5 +26,7 @@ namespace oinkoinkrun::window {
     void Window::show() {
         std::cout << "Window::show" << std::endl;
         SDL_ShowWindow(window.get());
+        SDL_FillRect(surface, nullptr, SDL_MapRGB(surface->format, 0, 0, 0));
+        SDL_UpdateWindowSurface(window.get());
     }
 }
