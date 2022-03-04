@@ -14,13 +14,14 @@ namespace oinkoinkrun {
         bool run = true;
         while(run) {
             events.poll([&run](const events::Events::Event &event) {
-                std::visit([&]<class T>(T&& arg) {
-                    if constexpr(std::is_same_v<std::decay_t<T>, events::Events::Event::Key>) {
-                        const auto& key = std::get<events::Events::Event::Key>(event.data);
-                        switch (key.code) {
+                std::visit([&run](const auto& data) {
+                    if constexpr(std::is_same_v<std::decay_t<decltype(data)>, events::Events::Event::Key>) {
+                        switch (data.code) {
                             case events::Events::Event::Key::Code::Escape: {
-                                std::cout << "ESC quit" << std::endl;
-                                run = false;
+                                if (data.type == events::Events::Event::Key::Type::Press) {
+                                    std::cout << "ESC quit" << std::endl;
+                                    run = false;
+                                }
                                 break;
                             }
                             default:
