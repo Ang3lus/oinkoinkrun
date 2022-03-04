@@ -1,0 +1,2 @@
+add_library(oinkoinkrun_graphics scrolling_background.cpp)
+target_link_libraries(oinkoinkrun_graphics SDL2)
