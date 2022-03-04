@@ -16,11 +16,19 @@ namespace oinkoinkrun::window {
                     SDL_DestroyWindow(window);
                 });
 
+        if (!window) {
+            throw std::runtime_error("Cannot create window");
+        }
+
         renderer = std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer*)>>(
                 SDL_CreateRenderer(window.get(), -1, 0),
                 [](SDL_Renderer* renderer) {
                     SDL_DestroyRenderer(renderer);
                 });
+
+        if (!renderer) {
+            throw std::runtime_error("Cannot create renderer");
+        }
     }
 
     Window::~Window() {
