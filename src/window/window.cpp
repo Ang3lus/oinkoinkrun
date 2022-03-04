@@ -1,13 +1,19 @@
 #include "window.h"
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 namespace oinkoinkrun::window {
     Window::Window() {
         std::cout << "Window::Window" << std::endl;
         if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
             std::cerr << SDL_GetError() << std::endl;
-            throw std::runtime_error("Window initialization failed");
+            throw std::runtime_error("Video initialization failed");
+        }
+
+        if (IMG_Init(IMG_INIT_PNG) ^ IMG_INIT_PNG) {
+            std::cerr << SDL_GetError() << std::endl;
+            throw std::runtime_error("Img initialization failed");
         }
 
         window = std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>>(
@@ -17,6 +23,7 @@ namespace oinkoinkrun::window {
                 });
 
         if (!window) {
+            std::cerr << SDL_GetError() << std::endl;
             throw std::runtime_error("Cannot create window");
         }
 
@@ -27,6 +34,7 @@ namespace oinkoinkrun::window {
                 });
 
         if (!renderer) {
+            std::cerr << SDL_GetError() << std::endl;
             throw std::runtime_error("Cannot create renderer");
         }
     }
