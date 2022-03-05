@@ -17,26 +17,26 @@ namespace oinkoinkrun::window {
             throw std::runtime_error("Img initialization failed");
         }
 
-        window = std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>>(
+        window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>>(
                 SDL_CreateWindow( "Oink Oink run", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, SDL_WINDOW_HIDDEN),
                 [](SDL_Window* window) {
                     SDL_DestroyWindow(window);
                 });
 
-        if (!window) {
+        if (!window_) {
             std::cerr << SDL_GetError() << std::endl;
-            throw std::runtime_error("Cannot create window");
+            throw std::runtime_error("Cannot create window_");
         }
 
-        renderer = std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer*)>>(
-                SDL_CreateRenderer(window.get(), -1, 0),
+        renderer_ = std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer*)>>(
+                SDL_CreateRenderer(window_.get(), -1, 0),
                 [](SDL_Renderer* renderer) {
                     SDL_DestroyRenderer(renderer);
                 });
 
-        if (!renderer) {
+        if (!renderer_) {
             std::cerr << SDL_GetError() << std::endl;
-            throw std::runtime_error("Cannot create renderer");
+            throw std::runtime_error("Cannot create renderer_");
         }
     }
 
@@ -44,28 +44,42 @@ namespace oinkoinkrun::window {
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
     }
 
-    void Window::show() {
-        std::cout << "Window::show" << std::endl;
-        SDL_ShowWindow(window.get());
-    }
+    oinkoinkrun::graphics::Image::Id Window::load_image(const std::filesystem::path &path) {
+        oinkoinkrun::graphics::Image::Id id;
+        std::unique_ptr<SDL_Texture, std::function<void(SDL_Texture*)>> image = {IMG_LoadTexture(
+            renderer_.get(),
+            path.c_str()),
+            [](SDL_Texture* texture) {
+                SDL_DestroyTexture(texture);
+            }};
 
-    void Window::clear() {
-        SDL_RenderClear(renderer.get());
-    }
-
-    void Window::render() {
-        SDL_Texture* texture = IMG_LoadTexture(
-                renderer.get(),
-                (std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-1-sky.png").c_str());
-        if (!texture) {
+        if (!image) {
             std::cerr << SDL_GetError() << std::endl;
             throw std::runtime_error("Cannot load image");
         }
-        SDL_RenderCopy(renderer.get(), texture, NULL, NULL);
-        SDL_DestroyTexture(texture);
+
+        images_.emplace(id, std::move(image));
+
+        return id;
+    }
+
+    void Window::show() {
+        std::cout << "Window::show" << std::endl;
+        SDL_ShowWindow(window_.get());
+    }
+
+    void Window::clear() {
+        SDL_RenderClear(renderer_.get());
+    }
+
+    void Window::render(const graphics::Image::Id& id) {
+        if (SDL_RenderCopy(renderer_.get(), images_[id].get(), NULL, NULL)) {
+            std::cerr << SDL_GetError() << std::endl;
+            throw std::runtime_error("Cannot render image");
+        }
     }
 
     void Window::refresh() {
-        SDL_RenderPresent(renderer.get());
+        SDL_RenderPresent(renderer_.get());
     }
 }

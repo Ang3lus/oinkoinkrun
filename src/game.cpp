@@ -3,17 +3,29 @@
 
 namespace oinkoinkrun {
     Game::Game() {
-        window::Window();
         std::cout << "Game::Game" << std::endl;
     }
 
     void Game::start() {
         std::cout << "Game::start" << std::endl;
-        window.show();
+        scrolling_backgrounds_.emplace_back(
+                window_.load_image(
+                        std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-1-sky.png"),
+                1);
+        scrolling_backgrounds_.emplace_back(
+                window_.load_image(
+                        std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-2-mountain.png"),
+                1);
+        scrolling_backgrounds_.emplace_back(
+                window_.load_image(
+                        std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-3-ground.png"),
+                1);
+
+        window_.show();
 
         bool run = true;
         while(run) {
-            events.poll([&run](const events::Events::Event &event) {
+            events_.poll([&run](const events::Events::Event &event) {
                 std::visit([&run](const auto& data) {
                     if constexpr(std::is_same_v<std::decay_t<decltype(data)>, events::Events::Event::Key>) {
                         switch (data.code) {
@@ -31,9 +43,11 @@ namespace oinkoinkrun {
                 }, event.data);
             });
 
-            window.clear();
-            window.render();
-            window.refresh();
+            window_.clear();
+            for (const auto& scrolling_background: scrolling_backgrounds_) {
+                window_.render(scrolling_background.image_id());
+            }
+            window_.refresh();
         }
     }
 }
