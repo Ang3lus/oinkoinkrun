@@ -4,6 +4,18 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+namespace {
+    SDL_Rect sdl_rect_from_pair(const std::pair<glm::ivec2, glm::ivec2>& src) {
+
+        return {
+            .x = src.first.x,
+            .y = src.first.y,
+            .w = src.second.x,
+            .h = src.second.y,
+        };
+    }
+}
+
 namespace oinkoinkrun::window {
     Window::Window() {
         std::cout << "Window::Window" << std::endl;
@@ -18,7 +30,7 @@ namespace oinkoinkrun::window {
         }
 
         window_ = std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>>(
-                SDL_CreateWindow( "Oink Oink run", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, SDL_WINDOW_HIDDEN),
+                SDL_CreateWindow( "Oink Oink run", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, SDL_WINDOW_FULLSCREEN | SDL_WINDOW_HIDDEN),
                 [](SDL_Window* window) {
                     SDL_DestroyWindow(window);
                 });
@@ -65,6 +77,7 @@ namespace oinkoinkrun::window {
 
     void Window::show() {
         std::cout << "Window::show" << std::endl;
+        SDL_ShowCursor(SDL_DISABLE);
         SDL_ShowWindow(window_.get());
     }
 
@@ -72,8 +85,20 @@ namespace oinkoinkrun::window {
         SDL_RenderClear(renderer_.get());
     }
 
-    void Window::render(const graphics::Image::Id& id) {
-        if (SDL_RenderCopy(renderer_.get(), images_[id].get(), NULL, NULL)) {
+    void Window::render(const graphics::Image::Id& id,
+                        const std::optional<std::pair<glm::ivec2, glm::ivec2>>& src_rect,
+                        const std::optional<std::pair<glm::ivec2, glm::ivec2>>& dst_rect) {
+        std::unique_ptr<SDL_Rect> src_sdl_rect;
+        std::unique_ptr<SDL_Rect> dst_sdl_rect;
+
+        if (src_rect) {
+            src_sdl_rect = std::make_unique<SDL_Rect>(sdl_rect_from_pair(*src_rect));
+        }
+
+        if (dst_rect) {
+            dst_sdl_rect = std::make_unique<SDL_Rect>(sdl_rect_from_pair(*dst_rect));
+        }
+        if (SDL_RenderCopy(renderer_.get(), images_[id].get(), src_sdl_rect.get(), dst_sdl_rect.get())) {
             std::cerr << SDL_GetError() << std::endl;
             throw std::runtime_error("Cannot render image");
         }

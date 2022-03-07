@@ -11,11 +11,11 @@ namespace oinkoinkrun {
         scrolling_backgrounds_.emplace_back(
                 window_.load_image(
                         std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-1-sky.png"),
-                1);
+                10);
         scrolling_backgrounds_.emplace_back(
                 window_.load_image(
                         std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-2-mountain.png"),
-                1);
+                5);
         scrolling_backgrounds_.emplace_back(
                 window_.load_image(
                         std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-3-ground.png"),
@@ -45,7 +45,7 @@ namespace oinkoinkrun {
 
             window_.clear();
             for (const auto& scrolling_background: scrolling_backgrounds_) {
-                window_.render(scrolling_background.image_id());
+                scrolling_background.render(window_);
             }
             window_.refresh();
         }

@@ -1,5 +1,7 @@
 #pragma once
 #include "graphics/image.h"
+#include <glm/vec2.hpp>
+#include <optional>
 #include <functional>
 #include <memory>
 #include <filesystem>
@@ -19,7 +21,9 @@ namespace oinkoinkrun::window {
 
         void show();
         void clear();
-        void render(const graphics::Image::Id& id);
+        void render(const graphics::Image::Id& id,
+                    const std::optional<std::pair<glm::ivec2, glm::ivec2>>& src_rect = std::nullopt,
+                    const std::optional<std::pair<glm::ivec2, glm::ivec2>>& dst_rect = std::nullopt);
         void refresh();
     private:
         std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>> window_;
