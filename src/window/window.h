@@ -17,7 +17,7 @@ namespace oinkoinkrun::window {
         Window();
         ~Window();
 
-        graphics::Image::Id load_image(const std::filesystem::path& path);
+        graphics::Image load_image(const std::filesystem::path& path);
 
         void show();
         void clear();
@@ -25,6 +25,7 @@ namespace oinkoinkrun::window {
                     const std::optional<std::pair<glm::ivec2, glm::ivec2>>& src_rect = std::nullopt,
                     const std::optional<std::pair<glm::ivec2, glm::ivec2>>& dst_rect = std::nullopt);
         void refresh();
+        glm::ivec2 rendering_surface_size() const;
     private:
         std::unique_ptr<SDL_Window, std::function<void(SDL_Window*)>> window_;
         std::unique_ptr<SDL_Renderer, std::function<void(SDL_Renderer*)>> renderer_;

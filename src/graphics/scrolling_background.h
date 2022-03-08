@@ -8,10 +8,12 @@ namespace oinkoinkrun::window {
 namespace oinkoinkrun::graphics {
     class ScrollingBackground final {
     public:
-        ScrollingBackground(Image::Id id, std::size_t scrolling_speed);
+        ScrollingBackground(Image image, std::size_t scrolling_speed);
         void render(window::Window& window) const;
+        void update(float dt, const window::Window &window);
     private:
-        Image::Id image_id_;
+        Image image_;
         std::size_t scrolling_speed_;
+        float x_pos = 0;
     };
 }

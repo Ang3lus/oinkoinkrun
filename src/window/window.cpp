@@ -56,7 +56,7 @@ namespace oinkoinkrun::window {
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
     }
 
-    oinkoinkrun::graphics::Image::Id Window::load_image(const std::filesystem::path &path) {
+    oinkoinkrun::graphics::Image Window::load_image(const std::filesystem::path &path) {
         oinkoinkrun::graphics::Image::Id id;
         std::unique_ptr<SDL_Texture, std::function<void(SDL_Texture*)>> image = {IMG_LoadTexture(
             renderer_.get(),
@@ -70,9 +70,15 @@ namespace oinkoinkrun::window {
             throw std::runtime_error("Cannot load image");
         }
 
+        glm::ivec2 size;
+        if (SDL_QueryTexture(image.get(), nullptr, nullptr, &size.x, &size.y)) {
+            std::cerr << SDL_GetError() << std::endl;
+            throw std::runtime_error("Cannot query texture size");
+        }
+
         images_.emplace(id, std::move(image));
 
-        return id;
+        return {id, size};
     }
 
     void Window::show() {
@@ -106,5 +112,14 @@ namespace oinkoinkrun::window {
 
     void Window::refresh() {
         SDL_RenderPresent(renderer_.get());
+    }
+
+    glm::ivec2 Window::rendering_surface_size() const {
+        glm::ivec2 size;
+        if (SDL_GetRendererOutputSize(renderer_.get(), &size.x, &size.y)) {
+            std::cerr << SDL_GetError() << std::endl;
+            throw std::runtime_error("Cannot get renderer output size");
+        }
+        return size;
     }
 }
