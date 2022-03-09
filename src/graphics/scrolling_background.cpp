@@ -33,7 +33,7 @@ namespace oinkoinkrun::graphics {
     void ScrollingBackground::update(float dt, const window::Window &window) {
         const auto& final_rendering_size = fit_image_size_to_window_height(image_, window);
 
-        x_pos -= scrolling_speed_ * dt;
+        x_pos -= ((scrolling_speed_/100.0) * window.rendering_surface_size().x) * dt;
 
         if (-x_pos >= final_rendering_size.x) {
             x_pos = 0;

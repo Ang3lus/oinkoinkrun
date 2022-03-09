@@ -8,6 +8,11 @@ namespace oinkoinkrun::window {
 namespace oinkoinkrun::graphics {
     class ScrollingBackground final {
     public:
+        /**
+         * Create scrolling background
+         * @param image Image to scroll
+         * @param scrolling_speed percent of screen to scroll in 1 second (0-100)
+         */
         ScrollingBackground(Image image, std::size_t scrolling_speed);
         void render(window::Window& window) const;
         void update(float dt, const window::Window &window);

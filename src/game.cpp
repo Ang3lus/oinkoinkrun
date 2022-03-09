@@ -12,15 +12,15 @@ namespace oinkoinkrun {
         scrolling_backgrounds_.emplace_back(
                 window_.load_image(
                         std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-1-sky.png"),
-                100);
+                10);
         scrolling_backgrounds_.emplace_back(
                 window_.load_image(
                         std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-2-mountain.png"),
-                250);
+                25);
         scrolling_backgrounds_.emplace_back(
                 window_.load_image(
                         std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-3-ground.png"),
-                500);
+                50);
 
         window_.show();
 
