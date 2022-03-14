@@ -1,0 +1,1 @@
+add_library(oinkoinkrun_scenes scene.cpp)
