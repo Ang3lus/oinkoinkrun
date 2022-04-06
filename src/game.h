@@ -2,13 +2,15 @@
 #include "events/events.h"
 #include "window/window.h"
 #include "scenes/scene.h"
-#include "graphics/scrolling_background.h"
+#include <typeindex>
 
 namespace oinkoinkrun {
-    class Game {
+    class Game final {
     public:
         Game();
         void start();
+        void stop();
+        window::Window& window();
     private:
         void handle_input();
         void render();
@@ -17,7 +19,7 @@ namespace oinkoinkrun {
         bool run_ = false;
         events::Events events_;
         window::Window window_;
-        std::vector<graphics::ScrollingBackground> scrolling_backgrounds_;
-        std::vector<std::unique_ptr<scenes::Scene>> scenes_;
+        std::unordered_map<std::type_index, std::unique_ptr<scenes::Scene>> scenes_;
+        std::type_index active_scene_;
     };
 }

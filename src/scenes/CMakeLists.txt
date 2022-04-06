@@ -1,1 +1,2 @@
-add_library(oinkoinkrun_scenes scene.cpp)
+add_library(oinkoinkrun_scenes scene.cpp mainmenu.cpp)
+target_link_libraries(oinkoinkrun_scenes oinkoinkrun_graphics)

@@ -1,23 +1,13 @@
 #include "game.h"
+#include "scenes/mainmenu.h"
 #include <iostream>
 #include <chrono>
+#include <functional>
 
 namespace oinkoinkrun {
-    Game::Game() {
+    Game::Game() : active_scene_{typeid(scenes::MainMenu)} {
         std::cout << "Game::Game" << std::endl;
-
-        scrolling_backgrounds_.emplace_back(
-                window_.load_image(
-                        std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-1-sky.png"),
-                10);
-        scrolling_backgrounds_.emplace_back(
-                window_.load_image(
-                        std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-2-mountain.png"),
-                25);
-        scrolling_backgrounds_.emplace_back(
-                window_.load_image(
-                        std::filesystem::path("src") / "assets" / "graphics" / "background" / "layer-3-ground.png"),
-                50);
+        scenes_.emplace(typeid(scenes::MainMenu), std::make_unique<scenes::MainMenu>(*this));
     }
 
     void Game::start() {
@@ -41,38 +31,23 @@ namespace oinkoinkrun {
         }
     }
 
-    void Game::handle_input() {
-        events_.poll([&](const events::Events::Event &event) {
-            std::visit([&](const auto& data) {
-                if constexpr(std::is_same_v<std::decay_t<decltype(data)>, events::Events::Event::Key>) {
-                    switch (data.code) {
-                        case events::Events::Event::Key::Code::Escape: {
-                            if (data.type == events::Events::Event::Key::Type::Press) {
-                                std::cout << "ESC quit" << std::endl;
-                                run_ = false;
-                            }
-                            break;
-                        }
-                        default:
-                            break;
-                    }
-                }
-            }, event.data);
-        });
+    void Game::stop() {
+        run_ = false;
+    }
 
+    window::Window& Game::window() {
+        return window_;
+    }
+
+    void Game::handle_input() {
+        events_.poll(std::bind(&scenes::Scene::handle_input, scenes_.at(active_scene_).get(), std::placeholders::_1));
     }
 
     void Game::render() {
-        window_.clear();
-        for (const auto& scrolling_background: scrolling_backgrounds_) {
-            scrolling_background.render(window_);
-        }
-        window_.refresh();
+        scenes_.at(active_scene_)->render();
     }
 
     void Game::update(float dt) {
-        for (auto& scrolling_background: scrolling_backgrounds_) {
-            scrolling_background.update(dt, window_);
-        }
+        scenes_.at(active_scene_)->update(dt);
     }
 }
